@@ -222,7 +222,7 @@ export async function GET(request: NextRequest) {
         width: 480,
         height: 500,
           headers: {
-              'Content-Type': 'image/svg+xml',
+              'Content-Type': 'image/png',
               'Cache-Control': 'public, max-age=300',
               'Access-Control-Allow-Origin': '*',
               'Access-Control-Allow-Methods': 'GET',
