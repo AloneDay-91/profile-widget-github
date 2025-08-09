@@ -175,7 +175,7 @@ export async function GET(request: NextRequest) {
       'React Native': '#61DAFB',
     };
 
-    return new ImageResponse(
+    const response = new ImageResponse(
       (
         <div
           style={{
@@ -270,8 +270,28 @@ export async function GET(request: NextRequest) {
       {
         width: 480,
         height: 400,
+        headers: {
+          // Headers optimisés pour le proxy GitHub (camo.githubusercontent.com)
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=1800, s-maxage=3600', // 30min/1h cache
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          // Prevent proxy authentication issues
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frame-Options': 'DENY',
+          // GitHub-friendly headers
+          'Vary': 'Accept-Encoding',
+          'ETag': `W/"${username}-${theme}-${Date.now()}"`,
+        }
       }
     );
+
+    // Ajouter des headers supplémentaires à la réponse finale
+    response.headers.set('X-Robots-Tag', 'noindex');
+    response.headers.set('X-GitHub-Widget', 'tech');
+
+    return response;
   } catch (error) {
     console.error('Error generating tech widget:', error);
     return new Response('Error generating tech widget', { status: 500 });
