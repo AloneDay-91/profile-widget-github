@@ -271,18 +271,19 @@ export async function GET(request: NextRequest) {
         width: 480,
         height: 400,
         headers: {
-          // Headers optimisés pour le proxy GitHub (camo.githubusercontent.com)
-          'Content-Type': 'image/svg+xml',
-          'Cache-Control': 'public, max-age=1800, s-maxage=3600', // 30min/1h cache
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          // Prevent proxy authentication issues
+          // Headers optimisés spécifiquement pour le proxy GitHub (camo.githubusercontent.com)
+          'Content-Type': 'image/png', // GitHub proxy préfère PNG pour les widgets
+          'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+          'Access-Control-Allow-Origin': 'https://github.com',
+          'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+          // Headers critiques pour éviter les erreurs 401/502 du proxy
           'X-Content-Type-Options': 'nosniff',
-          'X-Frame-Options': 'DENY',
-          // GitHub-friendly headers
-          'Vary': 'Accept-Encoding',
-          'ETag': `W/"${username}-${theme}-${Date.now()}"`,
+          'X-Frame-Options': 'SAMEORIGIN',
+          'X-XSS-Protection': '1; mode=block',
+          // Headers spécifiques au proxy GitHub
+          'Vary': 'Accept, Accept-Encoding',
+          'X-GitHub-Media-Type': 'github.v3',
+          'X-Proxy-Cache': 'MISS',
         }
       }
     );
