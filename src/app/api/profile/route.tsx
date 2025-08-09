@@ -74,18 +74,18 @@ export async function GET(request: NextRequest) {
     // Couleurs exactes du composant Tailwind
     const colors = {
       // Card background
-      cardBg: isDark ? '#111827' : '#ffffff', // bg-gray-900 : bg-white
-      cardText: isDark ? '#ffffff' : '#111827', // text-white : text-gray-900
-      cardBorder: isDark ? '#374151' : '#e5e7eb', // border-gray-700 : border par défaut
+      cardBg: isDark ? '#171717' : '#ffffff', // bg-gray-900 : bg-white
+      cardText: isDark ? '#ffffff' : '#171717', // text-white : text-gray-900
+      cardBorder: isDark ? '#404040' : '#404040', // border-gray-700 : border par défaut
 
       // Text colors
-      primaryText: isDark ? '#ffffff' : '#111827', // text-white : text-gray-900
-      secondaryText: isDark ? '#9ca3af' : '#4b5563', // text-gray-400 : text-gray-600
-      bioText: isDark ? '#d1d5db' : '#374151', // text-gray-300 : text-gray-700
+      primaryText: isDark ? '#ffffff' : '#171717', // text-white : text-gray-900
+      secondaryText: isDark ? '#a3a3a3' : '#525252', // text-gray-400 : text-gray-600
+      bioText: isDark ? '#d4d4d4' : '#404040', // text-gray-300 : text-gray-700
 
       // Stats background
-      statsBg: isDark ? '#1f2937' : '#f9fafb', // bg-gray-800 : bg-gray-50
-      statsText: isDark ? '#9ca3af' : '#4b5563', // text-gray-400 : text-gray-600
+      statsBg: isDark ? '#262626' : '#fafafa', // bg-gray-800 : bg-gray-50
+      statsText: isDark ? '#a3a3a3' : '#525252', // text-gray-400 : text-gray-600
     };
 
     console.log(`Generating widget for user: ${user.login}`);

@@ -91,13 +91,13 @@ export async function GET(request: NextRequest) {
 
     // Couleurs exactes du composant Tailwind
     const colors = {
-      cardBg: isDark ? '#111827' : '#ffffff',
-      cardText: isDark ? '#ffffff' : '#111827',
-      cardBorder: isDark ? '#374151' : '#e5e7eb',
-      primaryText: isDark ? '#ffffff' : '#111827',
-      secondaryText: isDark ? '#9ca3af' : '#4b5563',
-      techBg: isDark ? '#1f2937' : '#f3f4f6',
-      techText: isDark ? '#e5e7eb' : '#1f2937',
+        cardBg: isDark ? '#171717' : '#ffffff', // bg-gray-900 : bg-white
+        cardText: isDark ? '#ffffff' : '#171717', // text-white : text-gray-900
+        cardBorder: isDark ? '#404040' : '#404040', // border-gray-700 : border par défaut
+        primaryText: isDark ? '#ffffff' : '#171717', // text-white : text-gray-900
+        secondaryText: isDark ? '#a3a3a3' : '#525252', // text-gray-400 : text-gray-600
+        techBg: isDark ? '#262626' : '#fafafa', // bg-gray-800 : bg-gray-50
+        techText: isDark ? '#a3a3a3' : '#525252', // text-gray-400 : text-gray-600
     };
 
     // Couleurs pour les technologies
