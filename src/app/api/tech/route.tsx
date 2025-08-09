@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         throw new Error(`GitHub API error: ${userResponse.status}`);
       }
 
-      await userResponse.json(); // On récupère les données mais on n'a pas besoin de les stocker
+      await userResponse.json();
 
       // Si pas de tech personnalisées, récupérer les langages depuis les repos
       if (!customTech) {
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
           console.log(`[API Tech] Found ${repos.length} repositories`);
 
           // Récupérer les langages de chaque repo
-          for (const repo of repos.slice(0, 5)) { // Limiter à 5 repos pour éviter les rate limits
+          for (const repo of repos.slice(0, 5)) {
             try {
               const langResponse = await fetch(repo.languages_url, {
                 headers,
@@ -78,7 +78,6 @@ export async function GET(request: NextRequest) {
       }
     } catch (error) {
       console.error('[API Tech] Error fetching GitHub data:', error);
-      // Fallback vers des données de test si l'API GitHub échoue
       console.log(`[API Tech] Using fallback tech data for user: ${username}`);
       repoLanguages = username === 'aloneday-91'
         ? ['JavaScript', 'TypeScript', 'React', 'Next.js']
@@ -86,110 +85,86 @@ export async function GET(request: NextRequest) {
     }
 
     // Utiliser les tech personnalisées ou les langages détectés
-    const tech = customTech || repoLanguages.slice(0, 8); // Limiter à 8 pour l'affichage
+    const tech = customTech || repoLanguages.slice(0, 8);
 
     const isDark = theme === 'dark';
 
     // Couleurs exactes du composant Tailwind
     const colors = {
-      // Card background
-      cardBg: isDark ? '#111827' : '#ffffff', // bg-gray-900 : bg-white
-      cardText: isDark ? '#ffffff' : '#111827', // text-white : text-gray-900
-      cardBorder: isDark ? '#374151' : '#e5e7eb', // border-gray-700 : border par défaut
-
-      // Text colors
-      primaryText: isDark ? '#ffffff' : '#111827', // text-white : text-gray-900
-      secondaryText: isDark ? '#9ca3af' : '#4b5563', // text-gray-400 : text-gray-600
-
-      // Tech stack background
-      techBg: isDark ? '#1f2937' : '#f3f4f6', // bg-gray-800 : bg-gray-100
-      techText: isDark ? '#e5e7eb' : '#1f2937', // text-gray-200 : text-gray-800
+      cardBg: isDark ? '#111827' : '#ffffff',
+      cardText: isDark ? '#ffffff' : '#111827',
+      cardBorder: isDark ? '#374151' : '#e5e7eb',
+      primaryText: isDark ? '#ffffff' : '#111827',
+      secondaryText: isDark ? '#9ca3af' : '#4b5563',
+      techBg: isDark ? '#1f2937' : '#f3f4f6',
+      techText: isDark ? '#e5e7eb' : '#1f2937',
     };
 
     // Couleurs pour les technologies
     const techColors: { [key: string]: string } = {
-      // Langages de programmation
       'JavaScript': '#F7DF1E',
-      'js': '#F7DF1E',
-      'PHP': '#777BB4',
-      'php': '#777BB4',
-      'Python': '#3776AB',
-      'python': '#3776AB',
-      'HTML': '#E34F26',
-      'html': '#E34F26',
-      'CSS': '#1572B6',
-      'css': '#1572B6',
-      'C++': '#00599C',
-      'cpp': '#00599C',
-      'Bash': '#4EAA25',
-      'bash': '#4EAA25',
-      'JSON': '#000000',
-      'json': '#000000',
-      'MySQL': '#4479A1',
-      'mysql': '#4479A1',
-      'PowerShell': '#5391FE',
-      'powershell': '#5391FE',
-      'Sass': '#CC6699',
-      'sass': '#CC6699',
-      'Markdown': '#000000',
-      'markdown': '#000000',
-
-      // Frameworks et bibliothèques
-      'Tailwind CSS': '#06B6D4',
-      'tailwindcss': '#06B6D4',
-      'React': '#61DAFB',
-      'react': '#61DAFB',
-      'Next.js': '#000000',
-      'nextjs': '#000000',
-      'Node.js': '#339933',
-      'nodejs': '#339933',
-      'Vue.js': '#4FC08D',
-      'vuejs': '#4FC08D',
-      'Bootstrap': '#7952B3',
-      'bootstrap': '#7952B3',
-      'Express': '#000000',
-      'express': '#000000',
-
-      // Outils et services
-      'Git': '#F05032',
-      'git': '#F05032',
-      'MongoDB': '#47A248',
-      'mongodb': '#47A248',
-
-      // Technologies existantes conservées
       'TypeScript': '#3178C6',
-      'Java': '#ED8B00',
+      'Python': '#3776AB',
+      'PHP': '#777BB4',
+      'HTML': '#E34F26',
+      'CSS': '#1572B6',
+      'React': '#61DAFB',
+      'Next.js': '#000000',
+      'Vue.js': '#4FC08D',
+      'Node.js': '#339933',
       'Angular': '#DD0031',
       'Docker': '#2496ED',
-      'PostgreSQL': '#336791',
-      'Redis': '#DC382D',
-      'AWS': '#FF9900',
-      'Firebase': '#FFCA28',
-      'Linux': '#FCC624',
-      'C#': '#239120',
+      'Git': '#F05032',
+      'MongoDB': '#47A248',
       'Go': '#00ADD8',
       'Rust': '#000000',
       'Swift': '#FA7343',
       'Kotlin': '#0095D5',
-      'Flutter': '#02569B',
-      'React Native': '#61DAFB',
+      'Java': '#ED8B00',
     };
 
-    const response = new ImageResponse(
+    // Calculer les dimensions dynamiquement basées sur le nombre de technologies
+    const cardPadding = 24;
+    const cardWidth = 384;
+
+    // Calculer la hauteur basée sur le contenu
+    let contentHeight = 35; // Titre "Technologies"
+
+    // Calculer la disposition des badges
+    const badgeHeight = 28; // hauteur d'un badge avec padding
+    const badgeGap = 8;     // espacement vertical entre les rangées
+    const badgesPerRow = 3; // nombre de badges par rangée
+
+    const numberOfRows = Math.ceil(tech.length / badgesPerRow);
+    const badgesHeight = (numberOfRows * badgeHeight);
+
+    contentHeight += badgesHeight; // gap du titre + badges + margin bottom
+
+    // Ajouter les paddings de la card
+    const cardHeight = contentHeight + (cardPadding * 2);
+
+    // Dimensions finales sans padding - card collée aux bords
+    const svgPadding = 0;
+    const finalWidth = cardWidth;
+    const finalHeight = cardHeight;
+
+    console.log(`Tech widget calculated dimensions: ${finalWidth}x${finalHeight} (${tech.length} technologies, ${numberOfRows} rows)`);
+
+    return new ImageResponse(
       (
         <div
           style={{
             height: '100%',
             width: '100%',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#f8fafc',
+            alignItems: 'flex-start', // Coller en haut
+            justifyContent: 'flex-start', // Coller à gauche
+            // Forcer la transparence en annulant le CSS par défaut de Next.js OG
+              backgroundColor: 'rgba(0,0,0,0)',
             fontFamily: 'system-ui, -apple-system, sans-serif',
-            padding: '32px',
+            // Pas de padding du tout
           }}
         >
-          {/* Card container - max-w-md mx-auto */}
           <div
             style={{
               display: 'flex',
@@ -200,91 +175,72 @@ export async function GET(request: NextRequest) {
               borderRadius: '8px',
               width: '384px',
               boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+              padding: '24px',
             }}
           >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <h3
+                style={{
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  marginBottom: '8px',
+                  color: colors.primaryText,
+                  margin: '0 0 8px 0',
+                }}
+              >
+                Technologies
+              </h3>
 
-            {/* CardContent space-y-4 */}
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '24px',
-                gap: '16px', // space-y-4
-              }}
-            >
-              {/* Stack technique - text-sm font-medium mb-2 */}
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <h3
-                  style={{
-                    fontSize: '14px', // text-sm
-                    fontWeight: '500', // font-medium
-                    marginBottom: '8px', // mb-2
-                    color: colors.primaryText,
-                    margin: '0 0 8px 0',
-                  }}
-                >
-                  Technologies
-                </h3>
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                }}
+              >
+                {tech.map((techName, index) => {
+                  const techColor = techColors[techName] || '#6B7280';
+                  const bgColor = isDark
+                    ? colors.techBg
+                    : `${techColor}33`;
 
-                {/* flex flex-wrap gap-2 */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '8px', // gap-2
-                  }}
-                >
-                  {tech.map((techName, index) => {
-                    const techColor = techColors[techName] || '#6B7280';
-                    const bgColor = isDark
-                      ? colors.techBg
-                      : (theme === 'light' ? techColor + '20' : colors.techBg);
-
-                    return (
-                      <span
-                        key={index}
-                        style={{
-                          // px-2 py-1 rounded-full text-xs font-medium
-                          paddingLeft: '8px', // px-2
-                          paddingRight: '8px',
-                          paddingTop: '4px', // py-1
-                          paddingBottom: '4px',
-                          borderRadius: '9999px', // rounded-full
-                          fontSize: '12px', // text-xs
-                          fontWeight: '500', // font-medium
-                          backgroundColor: bgColor,
-                          color: colors.techText,
-                        }}
-                      >
-                        {techName}
-                      </span>
-                    );
-                  })}
-                </div>
+                  return (
+                    <span
+                      key={index}
+                      style={{
+                        paddingLeft: '12px',
+                        paddingRight: '12px',
+                        paddingTop: '6px',
+                        paddingBottom: '6px',
+                        borderRadius: '16px',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        backgroundColor: bgColor,
+                        color: colors.techText,
+                        border: `1px solid ${techColor}66`,
+                      }}
+                    >
+                      {techName.length > 12 ? techName.substring(0, 10) + '...' : techName}
+                    </span>
+                  );
+                })}
               </div>
-
             </div>
           </div>
         </div>
       ),
       {
-        width: 480,
-        height: 400,
-          headers: {
-              'Content-Type': 'image/png',
-              'Cache-Control': 'public, max-age=300',
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'GET',
-              'Access-Control-Allow-Headers': 'Content-Type',
-          }
+        width: finalWidth,
+        height: finalHeight,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=300',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
       }
     );
-
-    // Ajouter des headers supplémentaires à la réponse finale
-    response.headers.set('X-Robots-Tag', 'noindex');
-    response.headers.set('X-GitHub-Widget', 'tech');
-
-    return response;
   } catch (error) {
     console.error('Error generating tech widget:', error);
     return new Response('Error generating tech widget', { status: 500 });

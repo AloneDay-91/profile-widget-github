@@ -90,18 +90,54 @@ export async function GET(request: NextRequest) {
 
     console.log(`Generating widget for user: ${user.login}`);
 
-    // Générer l'ImageResponse avec les vraies données
-    const response = new ImageResponse(
+    // Calculer les dimensions dynamiquement basées sur le contenu
+    const cardPadding = 24;
+    const cardWidth = 384;
+
+    // Calculer la hauteur basée sur le contenu
+    let contentHeight = 0;
+
+    // Header (avatar + nom) : 64px + margins
+    contentHeight += 64 + 16; // avatar height + marginBottom
+
+    // Bio si présente
+    if (user.bio) {
+      const bioLines = Math.ceil(user.bio.length / 50); // Approximation des lignes
+      contentHeight += (bioLines * 20) + 16; // line height * lines + marginBottom
+    }
+
+    // Informations (location, company, blog)
+    const infoCount = [user.location, user.company, user.blog].filter(Boolean).length;
+    if (infoCount > 0) {
+      contentHeight += (infoCount * 28) + 16; // hauteur par info + marginBottom
+    }
+
+    // Stats : 60px + marginBottom
+    contentHeight += 60;
+
+    // Ajouter les paddings de la card
+    const cardHeight = contentHeight + (cardPadding * 2);
+
+    // Dimensions finales sans padding - card collée aux bords
+    const svgPadding = 0;
+    const finalWidth = cardWidth;
+    const finalHeight = cardHeight;
+
+    console.log(`Calculated dimensions: ${finalWidth}x${finalHeight} (content: ${contentHeight}px)`);
+
+    return new ImageResponse(
       (
         <div
           style={{
             height: '100%',
             width: '100%',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#f8fafc',
+            alignItems: 'flex-start', // Coller en haut
+            justifyContent: 'flex-start', // Coller à gauche
+            // Forcer la transparence en annulant le CSS par défaut de Next.js OG
+              backgroundColor: 'rgba(0,0,0,0)',
             fontFamily: 'system-ui',
+            // Pas de padding du tout
           }}
         >
           <div
@@ -126,10 +162,10 @@ export async function GET(request: NextRequest) {
                 style={{ borderRadius: '50%' }}
               />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontSize: '20px', fontWeight: '700', color: colors.primaryText, display: 'flex', }}>
+                <div style={{ fontSize: '20px', fontWeight: '700', color: colors.primaryText, display: 'flex' }}>
                   {user.name || user.login}
                 </div>
-                <div style={{ fontSize: '14px', color: colors.secondaryText, display: 'flex', }}>
+                <div style={{ fontSize: '14px', color: colors.secondaryText, display: 'flex' }}>
                   @{user.login}
                 </div>
               </div>
@@ -137,7 +173,7 @@ export async function GET(request: NextRequest) {
 
             {/* Bio */}
             {user.bio && (
-              <div style={{ fontSize: '14px', color: colors.bioText, marginBottom: '16px', lineHeight: '1.4', display: 'flex', }}>
+              <div style={{ fontSize: '14px', color: colors.bioText, marginBottom: '16px', lineHeight: '1.4', display: 'flex' }}>
                 {user.bio}
               </div>
             )}
@@ -146,20 +182,20 @@ export async function GET(request: NextRequest) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
               {user.location && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
-                  <div style={{display: 'flex',}}>📍</div>
-                  <div style={{ color: colors.primaryText, display: 'flex', }}>{user.location}</div>
+                  <div style={{display: 'flex'}}>📍</div>
+                  <div style={{ color: colors.primaryText, display: 'flex' }}>{user.location}</div>
                 </div>
               )}
               {user.company && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
-                  <div style={{display: 'flex',}}>🏢</div>
+                  <div style={{display: 'flex'}}>🏢</div>
                   <div style={{ color: colors.primaryText, display: 'flex' }}>{user.company}</div>
                 </div>
               )}
               {user.blog && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px' }}>
-                  <div style={{display: 'flex',}}>🔗</div>
-                  <div style={{ color: '#3b82f6', display: 'flex', }}>{user.blog.replace(/^https?:\/\//, '')}</div>
+                  <div style={{display: 'flex'}}>🔗</div>
+                  <div style={{ color: '#3b82f6', display: 'flex' }}>{user.blog.replace(/^https?:\/\//, '')}</div>
                 </div>
               )}
             </div>
@@ -175,10 +211,10 @@ export async function GET(request: NextRequest) {
                 borderRadius: '6px',
                 flex: 1
               }}>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: colors.primaryText, display: 'flex', }}>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: colors.primaryText, display: 'flex' }}>
                   {user.public_repos}
                 </div>
-                <div style={{ fontSize: '12px', color: colors.statsText, display: 'flex', }}>
+                <div style={{ fontSize: '12px', color: colors.statsText, display: 'flex' }}>
                   Repos
                 </div>
               </div>
@@ -191,10 +227,10 @@ export async function GET(request: NextRequest) {
                 borderRadius: '6px',
                 flex: 1
               }}>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: colors.primaryText, display: 'flex', }}>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: colors.primaryText, display: 'flex' }}>
                   {user.followers}
                 </div>
-                <div style={{ fontSize: '12px', color: colors.statsText, display: 'flex', }}>
+                <div style={{ fontSize: '12px', color: colors.statsText, display: 'flex' }}>
                   Followers
                 </div>
               </div>
@@ -207,10 +243,10 @@ export async function GET(request: NextRequest) {
                 borderRadius: '6px',
                 flex: 1
               }}>
-                <div style={{ fontSize: '18px', fontWeight: '600', color: colors.primaryText, display: 'flex', }}>
+                <div style={{ fontSize: '18px', fontWeight: '600', color: colors.primaryText, display: 'flex' }}>
                   {user.following}
                 </div>
-                <div style={{ fontSize: '12px', color: colors.statsText, display: 'flex', }}>
+                <div style={{ fontSize: '12px', color: colors.statsText, display: 'flex' }}>
                   Following
                 </div>
               </div>
@@ -219,23 +255,17 @@ export async function GET(request: NextRequest) {
         </div>
       ),
       {
-        width: 480,
-        height: 500,
-          headers: {
-              'Content-Type': 'image/png',
-              'Cache-Control': 'public, max-age=300',
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Methods': 'GET',
-              'Access-Control-Allow-Headers': 'Content-Type',
-          }
+        width: finalWidth,
+        height: finalHeight,
+        headers: {
+          'Content-Type': 'image/png',
+          'Cache-Control': 'public, max-age=300',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        }
       }
     );
-
-    // Ajouter des headers supplémentaires à la réponse finale
-    response.headers.set('X-Robots-Tag', 'noindex');
-    response.headers.set('X-GitHub-Widget', 'profile');
-
-    return response;
 
   } catch (error: unknown) {
     console.error('DETAILED ERROR in profile widget:', {
