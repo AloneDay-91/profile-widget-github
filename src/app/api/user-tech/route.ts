@@ -3,6 +3,14 @@ import { TechStack } from '@/types/github';
 
 export const runtime = 'edge';
 
+// Type pour un repository GitHub
+interface GitHubRepository {
+  name: string;
+  description: string | null;
+  fork: boolean;
+  size: number;
+}
+
 // Mapping des langages GitHub vers nos technologies
 const languageMapping: Record<string, TechStack> = {
   'JavaScript': { name: 'JavaScript', icon: '🟨', color: '#F7DF1E' },
@@ -27,7 +35,7 @@ const languageMapping: Record<string, TechStack> = {
 };
 
 // Détection de frameworks basée sur les noms de repos et fichiers
-const detectFrameworks = (repos: any[]): TechStack[] => {
+const detectFrameworks = (repos: GitHubRepository[]): TechStack[] => {
   const frameworks: TechStack[] = [];
   const frameworkSet = new Set<string>();
 
