@@ -5,10 +5,10 @@ Un générateur de widgets personnalisés pour afficher votre profil GitHub et v
 ## 🚀 Mes Widgets
 
 ### Profil GitHub
-![GitHub Profile Widget](https://profile-widget-github-e8u98ifxm-aloneday91s-projects.vercel.app/api/profile?username=aloneday-91&theme=light&v=2)
+![GitHub Profile Widget](https://profile-widget-github.vercel.app/api/profile?username=aloneday-91&theme=dark)
 
 ### Technologies
-![GitHub Tech Widget](https://profile-widget-github-e8u98ifxm-aloneday91s-projects.vercel.app/api/tech?username=aloneday-91&theme=light&tech=React%2CTypeScript%2CNext.js%2CJavaScript&v=2)
+![GitHub Tech Widget](https://profile-widget-github.vercel.app/api/tech?username=aloneday-91&theme=dark&tech=React%2CTypeScript%2CNext.js%2CJavaScript%2CPython%2CCSS%2CBash%2CMySQL%2CSass%2CTailwind+CSS%2CVue.js%2CExpress%2CMongoDB%2CAngular%2CDocker%2CGit%2CBootstrap%2CNode.js%2CMarkdown%2CPowerShell%2CJSON%2CC%2B%2B%2CHTML%2CPHP)
 
 ## 📋 À propos
 
