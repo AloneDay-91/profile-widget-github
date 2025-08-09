@@ -9,25 +9,53 @@ export async function GET(request: NextRequest) {
     const username = searchParams.get('username') || 'octocat';
     const theme = searchParams.get('theme') || 'light';
 
+    console.log(`[API Profile] Fetching data for user: ${username}`);
+
     // Récupérer les données utilisateur depuis l'API GitHub
     let user;
     try {
+      const headers: HeadersInit = {
+        'User-Agent': 'GitHub-Widget-Generator-App/1.0',
+        'Accept': 'application/vnd.github.v3+json',
+      };
+
+      // Ajouter le token GitHub si disponible (recommandé pour éviter les rate limits)
+      if (process.env.GITHUB_TOKEN) {
+        headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+      }
+
+      console.log(`[API Profile] Making request to GitHub API for user: ${username}`);
       const response = await fetch(`https://api.github.com/users/${username}`, {
-        headers: {
-          'User-Agent': 'GitHub-Widget-Generator',
-        },
+        headers,
+        // Ajouter un timeout pour éviter les blocages
+        signal: AbortSignal.timeout(10000), // 10 secondes
       });
 
+      console.log(`[API Profile] GitHub API response status: ${response.status}`);
+
       if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error(`[API Profile] GitHub API error: ${response.status} - ${errorText}`);
+
+        if (response.status === 404) {
+          throw new Error(`Utilisateur "${username}" introuvable sur GitHub`);
+        } else if (response.status === 403) {
+          throw new Error(`Limite de requêtes GitHub atteinte. Réessayez dans une heure.`);
+        } else if (response.status === 401) {
+          throw new Error(`Erreur d'authentification GitHub. Vérifiez la configuration.`);
+        } else {
+          throw new Error(`Erreur GitHub API: ${response.status}`);
+        }
       }
 
       user = await response.json();
+      console.log(`[API Profile] Successfully fetched user data for: ${user.login}`);
     } catch (error) {
-      console.error('Error fetching GitHub user:', error);
+      console.error('[API Profile] Error fetching GitHub user:', error);
       // Fallback vers des données de test si l'API GitHub échoue
+      console.log(`[API Profile] Using fallback data for user: ${username}`);
       user = {
-        name: 'John Doe',
+        name: username === 'aloneday-91' ? 'AloneDay-91' : 'John Doe',
         login: username,
         avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
         bio: 'Full-stack developer passionate about creating amazing user experiences.',

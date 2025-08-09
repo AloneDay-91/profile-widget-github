@@ -10,18 +10,32 @@ export async function GET(request: NextRequest) {
     const theme = searchParams.get('theme') || 'light';
     const customTech = searchParams.get('tech')?.split(',');
 
+    console.log(`[API Tech] Fetching data for user: ${username}`);
+
     // Récupérer les données utilisateur depuis l'API GitHub
     let repoLanguages: string[] = [];
 
     try {
+      const headers: HeadersInit = {
+        'User-Agent': 'GitHub-Widget-Generator-App/1.0',
+        'Accept': 'application/vnd.github.v3+json',
+      };
+
+      // Ajouter le token GitHub si disponible
+      if (process.env.GITHUB_TOKEN) {
+        headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+      }
+
       // Récupérer les infos de base de l'utilisateur
       const userResponse = await fetch(`https://api.github.com/users/${username}`, {
-        headers: {
-          'User-Agent': 'GitHub-Widget-Generator',
-        },
+        headers,
+        signal: AbortSignal.timeout(10000),
       });
 
+      console.log(`[API Tech] GitHub API user response status: ${userResponse.status}`);
+
       if (!userResponse.ok) {
+        console.error(`[API Tech] GitHub API error: ${userResponse.status}`);
         throw new Error(`GitHub API error: ${userResponse.status}`);
       }
 
@@ -30,39 +44,45 @@ export async function GET(request: NextRequest) {
       // Si pas de tech personnalisées, récupérer les langages depuis les repos
       if (!customTech) {
         const reposResponse = await fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=10`, {
-          headers: {
-            'User-Agent': 'GitHub-Widget-Generator',
-          },
+          headers,
+          signal: AbortSignal.timeout(15000),
         });
+
+        console.log(`[API Tech] GitHub API repos response status: ${reposResponse.status}`);
 
         if (reposResponse.ok) {
           const repos = await reposResponse.json();
           const languageSet = new Set<string>();
 
+          console.log(`[API Tech] Found ${repos.length} repositories`);
+
           // Récupérer les langages de chaque repo
           for (const repo of repos.slice(0, 5)) { // Limiter à 5 repos pour éviter les rate limits
             try {
               const langResponse = await fetch(repo.languages_url, {
-                headers: {
-                  'User-Agent': 'GitHub-Widget-Generator',
-                },
+                headers,
+                signal: AbortSignal.timeout(5000),
               });
               if (langResponse.ok) {
                 const languages = await langResponse.json();
                 Object.keys(languages).forEach(lang => languageSet.add(lang));
               }
             } catch (error) {
-              console.log(`Could not fetch languages for ${repo.name}`, error);
+              console.log(`[API Tech] Could not fetch languages for ${repo.name}`, error);
             }
           }
 
           repoLanguages = Array.from(languageSet);
+          console.log(`[API Tech] Detected languages: ${repoLanguages.join(', ')}`);
         }
       }
     } catch (error) {
-      console.error('Error fetching GitHub data:', error);
+      console.error('[API Tech] Error fetching GitHub data:', error);
       // Fallback vers des données de test si l'API GitHub échoue
-      repoLanguages = ['JavaScript', 'TypeScript', 'Python', 'Go'];
+      console.log(`[API Tech] Using fallback tech data for user: ${username}`);
+      repoLanguages = username === 'aloneday-91'
+        ? ['JavaScript', 'TypeScript', 'React', 'Next.js']
+        : ['JavaScript', 'TypeScript', 'Python', 'Go'];
     }
 
     // Utiliser les tech personnalisées ou les langages détectés
