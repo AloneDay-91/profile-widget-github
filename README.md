@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GitHub Widget Generator
 
-## Getting Started
+Un générateur de widgets personnalisés pour afficher votre profil GitHub et vos technologies dans vos README.
 
-First, run the development server:
+## 🚀 Mes Widgets
+
+### Profil GitHub
+![GitHub Profile Widget](https://profile-widget-github-e8u98ifxm-aloneday91s-projects.vercel.app/api/profile?username=aloneday-91&theme=light&v=2)
+
+### Technologies
+![GitHub Tech Widget](https://profile-widget-github-e8u98ifxm-aloneday91s-projects.vercel.app/api/tech?username=aloneday-91&theme=light&tech=React%2CTypeScript%2CNext.js%2CJavaScript&v=2)
+
+## 📋 À propos
+
+Ce projet permet de générer des widgets SVG dynamiques pour afficher :
+- 👤 Profil GitHub (avatar, nom, bio, stats)
+- 🛠️ Stack technique avec auto-détection depuis vos repositories
+- 🎨 Thèmes clair/sombre personnalisables
+
+## 🛠️ Technologies utilisées
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- API GitHub
+- SVG dynamique
+
+## 🌐 Demo
+
+Essayez le générateur : [GitHub Widget Generator](https://profile-widget-github-e8u98ifxm-aloneday91s-projects.vercel.app/)
+
+## ⚙️ Installation locale
 
 ```bash
+git clone https://github.com/aloneday-91/profile-widget-github.git
+cd profile-widget-github
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Configurez votre token GitHub dans `.env.local` :
+```env
+GITHUB_TOKEN=your_github_token_here
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📝 Utilisation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Widget Profil
+```markdown
+![GitHub Profile Widget](https://profile-widget-github-e8u98ifxm-aloneday91s-projects.vercel.app/api/profile?username=votre-username&theme=light)
+```
 
-## Learn More
+### Widget Technologies
+```markdown
+![GitHub Tech Widget](https://profile-widget-github-e8u98ifxm-aloneday91s-projects.vercel.app/api/tech?username=votre-username&theme=light&tech=React,TypeScript,Node.js)
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🎯 Fonctionnalités
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- ✅ Auto-détection des technologies depuis vos repos
+- ✅ Thèmes clair/sombre
+- ✅ Cache intelligent
+- ✅ Responsive design
+- ✅ Aucune base de données requise
+- ✅ Déployable sur Vercel
