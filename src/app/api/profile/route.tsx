@@ -20,9 +20,9 @@ export async function GET(request: NextRequest) {
       };
 
       // Ajouter le token GitHub si disponible (recommandé pour éviter les rate limits)
-      if (process.env.GITHUB_TOKEN) {
-        headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
-      }
+        if (process.env.GITHUB_TOKEN) {
+            headers['Authorization'] = `Bearer ${process.env.GITHUB_TOKEN}`;
+        }
 
       console.log(`[API Profile] Making request to GitHub API for user: ${username}`);
       const response = await fetch(`https://api.github.com/users/${username}`, {
