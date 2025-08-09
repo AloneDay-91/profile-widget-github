@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TechStack } from '@/types/github';
+import { TechStack, GitHubUser } from '@/types/github';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import GitHubWidget from '@/components/GitHubWidget';
@@ -56,7 +56,7 @@ export default function WidgetPreview() {
 		'both'
 	);
 	const [useAutoTech, setUseAutoTech] = useState(true);
-	const [githubUser, setGithubUser] = useState(null);
+	const [githubUser, setGithubUser] = useState<GitHubUser | null>(null);
 	const [detectedTech, setDetectedTech] = useState<TechStack[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState('');
@@ -106,8 +106,8 @@ export default function WidgetPreview() {
 								const languages = await langResponse.json();
 								Object.keys(languages).forEach(lang => languageSet.add(lang));
 							}
-						} catch (e) {
-							console.log(`Could not fetch languages for ${repo.name}`);
+						} catch (error) {
+							console.log(`Could not fetch languages for ${repo.name}`, error);
 						}
 					}
 
@@ -120,8 +120,8 @@ export default function WidgetPreview() {
 					setDetectedTech(detected);
 				}
 			}
-		} catch (err: any) {
-			setError(err.message);
+		} catch (err: unknown) {
+			setError(err instanceof Error ? err.message : 'Erreur inconnue');
 			setGithubUser(null);
 			setDetectedTech([]);
 		} finally {
@@ -172,9 +172,6 @@ export default function WidgetPreview() {
 				<p className="text-gray-600">
 					Créez des widgets personnalisés pour votre profil GitHub
 				</p>
-				<p className="text-sm text-gray-500 mt-2">
-					✨ Mode test activé avec des données d'exemple
-				</p>
 			</div>
 
 			<div className="grid md:grid-cols-2 gap-6">
@@ -185,7 +182,7 @@ export default function WidgetPreview() {
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<div>
-							<Label htmlFor="username">Nom d'utilisateur GitHub</Label>
+							<Label htmlFor="username">Nom d&apos;utilisateur GitHub</Label>
 							<div className="flex gap-2">
 								<Input
 									id="username"
@@ -356,7 +353,7 @@ export default function WidgetPreview() {
 										variant="outline"
 										className="w-full"
 									>
-										Copier l'URL Profil
+										Copier l&apos;URL Profil
 									</Button>
 								</div>
 							)}
@@ -378,7 +375,7 @@ export default function WidgetPreview() {
 											variant="outline"
 											className="w-full"
 										>
-											Copier l'URL Technologies
+											Copier l&apos;URL Technologies
 										</Button>
 									</div>
 								)}
@@ -398,7 +395,7 @@ export default function WidgetPreview() {
 									<div className="flex justify-center">
 										<GitHubWidget
 											theme={theme}
-											user={githubUser}
+											user={githubUser || undefined}
 										/>
 									</div>
 								</div>
@@ -411,7 +408,7 @@ export default function WidgetPreview() {
 											<TechStackCard
 												techStack={useAutoTech ? detectedTech : selectedTech}
 												theme={theme}
-												user={githubUser}
+												user={githubUser || undefined}
 											/>
 										</div>
 									</div>

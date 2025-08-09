@@ -198,15 +198,15 @@ export async function GET(request: NextRequest) {
 
     return response;
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('DETAILED ERROR in profile widget:', {
-      message: error.message,
-      stack: error.stack,
-      cause: error.cause,
-      name: error.name
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      cause: error instanceof Error ? error.cause : undefined,
+      name: error instanceof Error ? error.name : undefined
     });
 
-    return new Response(`Error generating profile widget: ${error.message}`, {
+    return new Response(`Error generating profile widget: ${error instanceof Error ? error.message : 'Unknown error'}`, {
       status: 500,
       headers: { 'Content-Type': 'text/plain' }
     });

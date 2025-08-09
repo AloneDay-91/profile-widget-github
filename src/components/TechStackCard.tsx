@@ -1,6 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { GitHubUser, TechStack } from "@/types/github";
-import Image from "next/image";
 
 interface TechStackCardProps {
   user?: GitHubUser;
@@ -8,14 +7,7 @@ interface TechStackCardProps {
   theme?: 'light' | 'dark';
 }
 
-export default function TechStackCard({ user, techStack = [], theme = 'light' }: TechStackCardProps) {
-  // Données de test par défaut si aucun user n'est fourni
-  const defaultUser = {
-    name: 'John Doe',
-    login: 'john-doe',
-    avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
-  };
-
+export default function TechStackCard({ techStack = [], theme = 'light' }: TechStackCardProps) {
   // Stack technique par défaut
   const defaultTechStack = [
     { name: 'React', color: '#61DAFB' },
@@ -26,7 +18,6 @@ export default function TechStackCard({ user, techStack = [], theme = 'light' }:
     { name: 'MongoDB', color: '#47A248' }
   ];
 
-  const currentUser = user || defaultUser;
   const currentTechStack = techStack.length > 0 ? techStack : defaultTechStack;
 
   return (

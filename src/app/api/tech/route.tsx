@@ -11,8 +11,7 @@ export async function GET(request: NextRequest) {
     const customTech = searchParams.get('tech')?.split(',');
 
     // Récupérer les données utilisateur depuis l'API GitHub
-    let user;
-    let repoLanguages = [];
+    let repoLanguages: string[] = [];
 
     try {
       // Récupérer les infos de base de l'utilisateur
@@ -26,7 +25,7 @@ export async function GET(request: NextRequest) {
         throw new Error(`GitHub API error: ${userResponse.status}`);
       }
 
-      user = await userResponse.json();
+      await userResponse.json(); // On récupère les données mais on n'a pas besoin de les stocker
 
       // Si pas de tech personnalisées, récupérer les langages depuis les repos
       if (!customTech) {
@@ -38,7 +37,7 @@ export async function GET(request: NextRequest) {
 
         if (reposResponse.ok) {
           const repos = await reposResponse.json();
-          const languageSet = new Set();
+          const languageSet = new Set<string>();
 
           // Récupérer les langages de chaque repo
           for (const repo of repos.slice(0, 5)) { // Limiter à 5 repos pour éviter les rate limits
@@ -52,8 +51,8 @@ export async function GET(request: NextRequest) {
                 const languages = await langResponse.json();
                 Object.keys(languages).forEach(lang => languageSet.add(lang));
               }
-            } catch (e) {
-              console.log(`Could not fetch languages for ${repo.name}`);
+            } catch (error) {
+              console.log(`Could not fetch languages for ${repo.name}`, error);
             }
           }
 
@@ -63,11 +62,6 @@ export async function GET(request: NextRequest) {
     } catch (error) {
       console.error('Error fetching GitHub data:', error);
       // Fallback vers des données de test si l'API GitHub échoue
-      user = {
-        name: 'John Doe',
-        login: username,
-        avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
-      };
       repoLanguages = ['JavaScript', 'TypeScript', 'Python', 'Go'];
     }
 

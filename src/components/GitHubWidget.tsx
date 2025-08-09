@@ -1,14 +1,14 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { GitHubUser, TechStack } from "@/types/github";
-import { MapPin, Building, Link as LinkIcon, Calendar } from "lucide-react";
+import { GitHubUser } from "@/types/github";
 import Image from "next/image";
+import {Building, LinkIcon, MapPin} from "lucide-react";
 
 interface GitHubWidgetProps {
   user?: GitHubUser;
   theme?: 'light' | 'dark';
 }
 
-export default function GitHubWidget({ user, techStack = [], theme = 'light' }: GitHubWidgetProps) {
+export default function GitHubWidget({ user, theme = 'light' }: GitHubWidgetProps) {
   // Données de test par défaut si aucun user n'est fourni
   const defaultUser = {
     name: 'John Doe',
