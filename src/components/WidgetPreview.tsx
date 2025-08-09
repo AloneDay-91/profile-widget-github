@@ -94,34 +94,31 @@ export default function WidgetPreview() {
 			const userData = await userResponse.json();
 			setGithubUser(userData);
 
-			// Si mode auto-détection, simuler la détection de technologies
+			// Si mode auto-détection, utiliser l'API pour détecter les vraies technologies
 			// En production, vous pourriez créer une API /api/user-tech pour récupérer les vraies technos
 			if (useAutoTech) {
-				// Simuler quelques technologies basées sur le nom d'utilisateur
-				let detectedTechs = ['JavaScript', 'TypeScript'];
+				try {
+					const techResponse = await fetch(`/api/user-tech?username=${searchUsername}`);
 
-				if (searchUsername.includes('react') || searchUsername.includes('next')) {
-					detectedTechs.push('React', 'Next.js');
+					if (techResponse.ok) {
+						const techData = await techResponse.json();
+						setDetectedTech(techData.technologies || []);
+					} else {
+						// Fallback en cas d'erreur de l'API tech
+						console.warn('Erreur API user-tech, utilisation du fallback');
+						setDetectedTech([
+							{ name: 'JavaScript', icon: '🟨', color: '#F7DF1E' },
+							{ name: 'Git', icon: '📋', color: '#F05032' }
+						]);
+					}
+				} catch (techError) {
+					console.warn('Erreur lors de la détection des technologies:', techError);
+					// Fallback simple en cas d'erreur
+					setDetectedTech([
+						{ name: 'JavaScript', icon: '🟨', color: '#F7DF1E' },
+						{ name: 'Git', icon: '📋', color: '#F05032' }
+					]);
 				}
-				if (searchUsername.includes('vue')) {
-					detectedTechs.push('Vue.js');
-				}
-				if (searchUsername.includes('python') || searchUsername.includes('django')) {
-					detectedTechs.push('Python');
-				}
-				if (searchUsername.includes('node')) {
-					detectedTechs.push('Node.js');
-				}
-
-				// Ajouter quelques technos communes
-				detectedTechs.push('Git', 'HTML', 'CSS');
-
-				const detected = detectedTechs.map(lang => {
-					const existing = defaultTechStack.find(t => t.name === lang);
-					return existing || { name: lang, icon: '💻', color: '#6B7280' };
-				}).slice(0, 6);
-
-				setDetectedTech(detected);
 			}
 		} catch (err: unknown) {
 			setError(err instanceof Error ? err.message : 'Erreur inconnue');
